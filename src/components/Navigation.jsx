@@ -1,42 +1,26 @@
-import {
-	Navbar,
-	Dropdown,
-	Avatar,
-	Button,
-	DarkThemeToggle,
-} from 'flowbite-react'
-
-import { NavLink } from './NavLink'
+import { Button, Dropdown, Menu, Navbar } from 'react-daisyui'
+import { Link } from 'react-router-dom'
 
 export const Navigation = () => {
 	return (
-		<div className="bg-white dark:bg-gray-800">
-			<Navbar
-				fluid={false}
-				rounded={false}
-				color={'bg-slate-700'}
-				className="mx-auto max-w-7xl dark:bg-gray-800"
-			>
-				<Navbar.Brand href="/">
-					{/* <img
-						src="https://flowbite.com/docs/images/logo.svg"
-						className="mr-3 h-6 sm:h-9"
-						alt="Flowbite Logo"
-					/> */}
-					<span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-						Movies App
-					</span>
-				</Navbar.Brand>
-				<div className="flex md:order-2">
-					<DarkThemeToggle />
-					<Button>Log in</Button>
-					<Navbar.Toggle />
-				</div>
-				<Navbar.Collapse>
-					<NavLink to="/" text="Home" />
-					<NavLink to="/movies" text="Movies" />
-					<NavLink to="/about" text="About" />
-				</Navbar.Collapse>
+		<div className="flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl">
+			<Navbar>
+				<Navbar.Start>
+					<Link
+						to="/"
+						className="btn btn-ghost normal-case text-2xl font-semibold"
+					>
+						MoviesApp+
+					</Link>
+				</Navbar.Start>
+				<Navbar.End>
+					<Link to="/signin" className="btn btn-ghost mr-2">
+						Sign in
+					</Link>
+					<Link to="/signup" className="btn btn-primary">
+						Sign up
+					</Link>
+				</Navbar.End>
 			</Navbar>
 		</div>
 	)

@@ -10,11 +10,9 @@ function App() {
 				<Route
 					path="/"
 					element={
-						<div className="min-h-screen dark:bg-gray-700">
-							<div className="mx-auto max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl px-2 sm:px-4 md:px-0 lg:px-0 xl:px-4">
-								<h1 className="dark:text-white">
-									Work in progress
-								</h1>
+						<div className="min-h-screen">
+							<div className="mx-auto max-w-8xl px-8">
+								<h1>Work in progress</h1>
 							</div>
 						</div>
 					}
