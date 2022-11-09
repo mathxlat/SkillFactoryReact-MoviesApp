@@ -1,25 +1,58 @@
-import { Button, Dropdown, Menu, Navbar } from 'react-daisyui'
+import { Button, Dropdown, Navbar } from 'react-daisyui'
 import { Link } from 'react-router-dom'
+import { useAuthContext } from './../context/AuthProvider'
 
 export const Navigation = () => {
+	const { user, logOut } = useAuthContext()
+
 	return (
-		<div className="flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl absolute">
+		<div className="z-50 flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl bg-black shadow-2xl">
 			<Navbar>
 				<Navbar.Start>
 					<Link
 						to="/"
-						className="btn btn-ghost normal-case text-2xl font-semibold"
+						className="btn btn-ghost normal-case text-3xl font-semibold"
 					>
-						MoviesApp+
+						MOVIES<span className="text-primary">+</span>
 					</Link>
 				</Navbar.Start>
 				<Navbar.End>
-					<Link to="/signin" className="btn btn-ghost mr-2">
-						Sign in
-					</Link>
-					<Link to="/signup" className="btn btn-primary">
-						Sign up
-					</Link>
+					{user ? (
+						<Dropdown vertical="end">
+							<Button
+								color="ghost"
+								className="avatar"
+								shape="circle"
+							>
+								<div className="w-10 rounded-full">
+									<img src="https://api.lorem.space/image/face?hash=33791" />
+								</div>
+							</Button>
+							<Dropdown.Menu className="w-52 menu-compact">
+								<li>
+									<Link
+										to="/profile"
+										className="justify-between"
+									>
+										Profile
+									</Link>
+								</li>
+								<Dropdown.Item>Settings</Dropdown.Item>
+								<Dropdown.Item onClick={() => logOut()}>
+									Logout
+								</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+					) : (
+						<>
+							<Link to="/login" className="btn btn-ghost mr-2">
+								Log in
+							</Link>
+							<Link to="/signup" className="btn btn-primary">
+								Sign up
+							</Link>
+						</>
+					)}
 				</Navbar.End>
 			</Navbar>
 		</div>
