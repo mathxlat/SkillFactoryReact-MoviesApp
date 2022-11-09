@@ -1,6 +1,7 @@
 import { Flowbite } from 'flowbite-react'
 import { Routes, Route } from 'react-router-dom'
 import { Navigation } from './components/Navigation'
+import Home from './pages/Home'
 
 function App() {
 	return (
@@ -9,13 +10,7 @@ function App() {
 			<Routes>
 				<Route
 					path="/"
-					element={
-						<div className="min-h-screen">
-							<div className="mx-auto max-w-8xl px-8">
-								<h1>Work in progress</h1>
-							</div>
-						</div>
-					}
+					element={<Home />}
 				/>
 			</Routes>
 		</Flowbite>

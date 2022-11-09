@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export const Navigation = () => {
 	return (
-		<div className="flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl">
+		<div className="flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl absolute">
 			<Navbar>
 				<Navbar.Start>
 					<Link
