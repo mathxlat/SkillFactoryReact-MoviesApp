@@ -6,7 +6,7 @@ export const Navigation = () => {
 	const { user, logOut } = useAuthContext()
 
 	return (
-		<div className="z-50 flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl bg-black shadow-2xl">
+		<div className="absolute z-50 flex w-full px-1 items-center justify-center gap-2 mx-auto max-w-8xl">
 			<Navbar>
 				<Navbar.Start>
 					<Link
