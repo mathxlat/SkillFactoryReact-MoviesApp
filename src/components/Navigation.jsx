@@ -11,9 +11,9 @@ export const Navigation = () => {
 				<Navbar.Start>
 					<Link
 						to="/"
-						className="btn btn-ghost normal-case text-3xl font-semibold"
+						className="px-4 normal-case text-2xl md:text-4xl font-normal font-kanit"
 					>
-						MOVIES<span className="text-primary">+</span>
+						MOVIES APP<span className="text-primary">+</span>
 					</Link>
 				</Navbar.Start>
 				<Navbar.End>
