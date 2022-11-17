@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
 		)
 
 		const userRef = doc(firestore, 'users', userCredential.user.uid)
-
 		setDoc(userRef, { email, name, role })
 	}
 
