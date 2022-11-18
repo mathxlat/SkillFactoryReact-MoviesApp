@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import Movie from './Movie'
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 
 const Row = ({ title, fetchURL }) => {
 	const [movies, setMovies] = useState([])
@@ -38,7 +39,9 @@ const Row = ({ title, fetchURL }) => {
 					className="w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide relative"
 				>
 					{movies.map((item, id) => (
-						<Movie key={id} item={item} />
+						<Link to={`./movie/${item.id}`}>
+							<Movie key={id} item={item} />
+						</Link>
 					))}
 				</div>
 				<MdChevronRight
