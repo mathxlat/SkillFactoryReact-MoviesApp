@@ -1,13 +1,13 @@
-import { redirect, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { IoMdPlay } from "react-icons/io";
 import { useEffect, useState } from "react";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
 import { firestore as db } from "../firebase/index";
-import { useAuthContext } from "./../context/AuthProvider";
-import Trailer from "../components/Trailer";
+import { useAuthContext } from "../context/AuthProvider";
 import YouTube from "react-youtube";
+import { useMovieContext } from "../context/Movies";
 
 export default function DetaillMovies() {
   const navigate = useNavigate();
@@ -15,29 +15,58 @@ export default function DetaillMovies() {
   const [movie, setMovie] = useState();
   const [trailer, setTrailer] = useState();
   const [showTrailer, setShowTrailer] = useState(false);
-  const [reviwe, setReview] = useState({ vote: 0, comentary: "" });
+  const [review, setReview] = useState({ rating: 0, comentary: "" });
+  const [like, setLike] = useState(false);
   const { user } = useAuthContext();
+  const { movies, setMoviesReview, getMoviesReview, favouritesMovies } = useMovieContext();
 
-  // 33 skill factory firebase app, comienzo de e-commerce
-  //https://youtu.be/VjJkWRgg-HA?t=5778
   const favouriteMovie = async (e) => {
     e.preventDefault();
-    if (user) {
+    if (user && user.hasOwnProperty("uid")) {
       const usersCollection = doc(db, "users", user.uid);
-      const dataUser = await getDoc(usersCollection);
-      await updateDoc(usersCollection, {
-        movieFavourites: arrayUnion(id),
-      });
-      console.log(dataUser.data());
+      setLike(true);
+      const data = {
+        id: movie.id.toString(),
+        backdrop_path: movie.backdrop_path,
+        title: movie.title,
+      };
+      await setDoc(
+        usersCollection,
+        {
+          movieFavourites: arrayUnion(data),
+        },
+        { merge: true }
+      );
     } else {
       navigate("/signup");
     }
   };
+
+  const desFavouriteMovie = async (e) => {
+    e.preventDefault();
+    if (
+      user &&
+      user.hasOwnProperty("uid") &&
+      movies.hasOwnProperty("favouriteMovies")
+    ) {
+      const usersCollection = doc(db, "users", user.uid);
+      const moviesFav = await movies.favouriteMovies.filter((e) => e.id !== id);
+       
+      setDoc(
+        usersCollection,
+        { movieFavourites: moviesFav },
+        { merge: true }
+      ).then(e=>setLike(false), favouritesMovies())
+      // setLike(false);
+      // favouritesMovies()
+    }
+  };
+
   const getMovie = async () => {
     try {
       let movieInfo = await axios.get(
         `https://api.themoviedb.org/3/movie/${id}?api_key=${
-          import.meta.env.VITE_KEY
+          import.meta.env.VITE_KEY_API_MOVIES
         }&append_to_response=videos`
       );
       // https://api.themoviedb.org/3/movie/?api_key=${import.meta.env.VITE_KEY}&append_to_response=videos
@@ -50,31 +79,60 @@ export default function DetaillMovies() {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getMovie();
+    setReview({ rating: 0, comentary: "" });
   }, [id]);
+  useEffect(() => {
+    vote();
+  }, [movie]);
+  useEffect(() => {
+    fav();
+  }, [id, movies]);
 
-  // const opts = {
-  //   playerVars: {
-  //     autoplay: 1,
-  //   },
-  // };
-  console.log(movie);
+  const rating = (e) => {
+    setReview({ ...review, [e.target.name]: e.target.value });
+  };
+
+  const submit = async () => {
+    if (user) {
+      const dataUser = { name: user.name, id: user.uid };
+      await setMoviesReview(movie.id, dataUser, review);
+    } else {
+      navigate("/signup");
+    }
+  };
+
+  const vote = async () => {
+    if (movie !== undefined && movie.hasOwnProperty("id") && user) {
+      console.log(movie);
+      const comentary = await getMoviesReview(
+        movie.id.toString(),
+        user.uid.toString()
+      );
+      setReview(comentary.review);
+    }
+  };
+
+  const fav = async () => {
+    if (movies && movies.hasOwnProperty("favouriteMovies") && id) {
+      const index = movies.favouriteMovies.findIndex((e) => e.id === id);
+      index !== -1 ? setLike(true) : setLike(false);
+    }
+  };
+  console.log(movies);
   return (
     <div>
-      {/* {showTrailer ? (
-        <Trailer videoId={trailer.key} className="absolute z-[11]" />
-      ) : null} */}
       <div className="relative h-scren z-[5]">
         <div className="absolute w-full h-screen top-0 left-0 bg-gradient-to-t from-black z-[2]"></div>
         <img
           src={`https://image.tmdb.org/t/p/original/${
             movie && (movie.backdrop_path || movie.poster_path)
           }`}
-          alt=""
+          alt={movie?.title}
           className="absolute w-full h-screen object-cover z-[1]"
         />
-        {/* <YouTube videoId={trailer && trailer.key} /> */}
         <div className="absolute flex justify-center w-screen h-screen pt-96 z-[3]">
           <img
             className="w-[15rem] h-fit"
@@ -86,7 +144,8 @@ export default function DetaillMovies() {
           <div className="pl-3 text-base">
             <h1 className="text-3xl">{movie && movie.title}</h1>
             <div>
-              <span>
+              <span className="flex items-center">
+                {movie && movie.vote_average !== 0 && <FaStar />}
                 {movie &&
                   movie.vote_average !== 0 &&
                   movie.vote_average.toPrecision(2)}
@@ -112,7 +171,6 @@ export default function DetaillMovies() {
               <IoMdPlay />
               Watch Trailer
             </label>
-            {/* Put this part before </body> tag */}
             <input type="checkbox" id="my-modal-3" className="modal-toggle" />
             <div className="modal">
               <div className="modal-box relative w-auto h-auto max-w-none">
@@ -128,16 +186,27 @@ export default function DetaillMovies() {
                 ) : null}
               </div>
             </div>
-            <button
-              className="pl-2"
-              onClick={(e) => {
-                favouriteMovie(e);
-              }}
-            >
-              <FaHeart />
-            </button>
+            {like ? (
+              <button
+                className="pl-2"
+                onClick={(e) => {
+                  desFavouriteMovie(e);
+                }}
+              >
+                <FaHeart />
+                {/* realizar la logica de desfavear */}
+              </button>
+            ) : (
+              <button
+                className="pl-2"
+                onClick={(e) => {
+                  favouriteMovie(e);
+                }}
+              >
+                <FaRegHeart />
+              </button>
+            )}
             <br />
-            {/* <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-2">Vote</button> */}
             <label htmlFor="my-modal-4" className="btn mt-2">
               Vote
             </label>
@@ -150,45 +219,67 @@ export default function DetaillMovies() {
                 >
                   ✕
                 </label>
-                <form action="post" className="flex flex-col">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault(), submit(e);
+                  }}
+                  className="flex flex-col"
+                  htmlFor="my-modal-4"
+                >
                   <div className="rating">
                     <input
                       type="radio"
-                      name="rating-2"
+                      name="rating"
                       className="mask mask-star-2 bg-orange-400"
+                      value={1}
+                      onChange={(e) => rating(e)}
                     />
                     <input
                       type="radio"
-                      name="rating-2"
+                      name="rating"
                       className="mask mask-star-2 bg-orange-400"
-                      // onSelect={}
+                      value={2}
+                      onChange={(e) => rating(e)}
                     />
                     <input
                       type="radio"
-                      name="rating-2"
+                      name="rating"
                       className="mask mask-star-2 bg-orange-400"
+                      value={3}
+                      onChange={(e) => rating(e)}
                     />
                     <input
                       type="radio"
-                      name="rating-2"
+                      name="rating"
                       className="mask mask-star-2 bg-orange-400"
+                      value={4}
+                      onChange={(e) => rating(e)}
                     />
                     <input
                       type="radio"
-                      name="rating-2"
+                      name="rating"
                       className="mask mask-star-2 bg-orange-400"
+                      value={5}
+                      onChange={(e) => rating(e)}
                     />
                   </div>
                   <label>comentary(optional)</label>
                   <textarea
+                    name="comentary"
                     className="textarea textarea-bordered"
                     placeholder="Review..."
+                    value={review.comentary}
+                    onChange={(e) => rating(e)}
                   ></textarea>
-                  <input
-                    type="submit"
-                    value="Send"
-                    className="cursor-pointer"
-                  />
+                  <label
+                    htmlFor="my-modal-4"
+                    className="btn z-30"
+                    onClick={(e) => {
+                      submit(e);
+                    }}
+                  >
+                    Send
+                  </label>
                 </form>
               </div>
             </div>
@@ -198,5 +289,3 @@ export default function DetaillMovies() {
     </div>
   );
 }
-//realizar pedido axios, react-youtube, boton fav y agregar al usuario que esta conectado su pelicula al array en firestore.
-//features: comentarios

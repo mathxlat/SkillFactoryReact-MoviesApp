@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import booksReducer from "../features/books/booksSlices";
+import { moviesSlice } from "./movieSlice";
+import { usersSlice } from "./userSlice";
 
 export const store = configureStore({
   reducer: {
-    books: booksReducer,
+    users: usersSlice,
+    movies: moviesSlice,
   },
 });

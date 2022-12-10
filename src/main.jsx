@@ -1,17 +1,23 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from './context/AuthProvider'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthProvider";
+import { MoviesProvider } from "./context/Movies";
+import { store } from "./redux/Store";
+import { Provider } from "react-redux";
+import App from "./App";
+import "./styles/index.css";
 
-import App from './App'
-import './styles/index.css'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-	<React.StrictMode>
-		<AuthProvider>
-			<BrowserRouter>
-				<App />
-			</BrowserRouter>
-		</AuthProvider>
-	</React.StrictMode>
-)
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <MoviesProvider>
+        <BrowserRouter>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </BrowserRouter>
+      </MoviesProvider>
+    </AuthProvider>
+  </React.StrictMode>
+);
