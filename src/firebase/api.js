@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
+import { doc, getDoc, arrayUnion, setDoc } from "firebase/firestore";
 
 /**
  *
@@ -6,12 +6,12 @@ import { doc, getDoc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
  * @param {*} id id of the movie
  * @returns returns the reviews of the movie (if any)
  */
-export const comments = async (db, id) => {
-  const docRef = doc(db, "movies", id.toString());
-  const docSnap = await getDoc(docRef);
-  // console.log("data:", docSnap.data());
-  return docSnap.data();
-};
+// export const getComments = async (db, id) => {
+//   const docRef = doc(db, "movies", id.toString());
+//   const docSnap = await getDoc(docRef);
+//   // console.log("data:", docSnap.data());
+//   return docSnap.data();
+// };
 /**
  *
  * @param {*} e event

@@ -37,7 +37,7 @@ export const Navigation = () => {
 										Profile
 									</Link>
 								</li>
-								<Dropdown.Item>Settings</Dropdown.Item>
+								{/* <Dropdown.Item>Settings</Dropdown.Item> */}
 								<Dropdown.Item onClick={() => logOut()}>
 									Logout
 								</Dropdown.Item>

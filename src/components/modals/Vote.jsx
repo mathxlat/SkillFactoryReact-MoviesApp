@@ -27,6 +27,7 @@ export default function Vote({ review, submit, rating }) {
                 className="mask mask-star-2 bg-orange-400"
                 value={1}
                 onChange={(e) => rating(e)}
+                checked={review.rating == 1 ? true : false}
               />
               <input
                 type="radio"
@@ -34,6 +35,7 @@ export default function Vote({ review, submit, rating }) {
                 className="mask mask-star-2 bg-orange-400"
                 value={2}
                 onChange={(e) => rating(e)}
+                checked={review.rating == 2 ? true : false}
               />
               <input
                 type="radio"
@@ -41,6 +43,7 @@ export default function Vote({ review, submit, rating }) {
                 className="mask mask-star-2 bg-orange-400"
                 value={3}
                 onChange={(e) => rating(e)}
+                checked={review.rating == 3 ? true : false}
               />
               <input
                 type="radio"
@@ -48,6 +51,7 @@ export default function Vote({ review, submit, rating }) {
                 className="mask mask-star-2 bg-orange-400"
                 value={4}
                 onChange={(e) => rating(e)}
+                checked={review.rating == 4 ? true : false}
               />
               <input
                 type="radio"
@@ -55,6 +59,7 @@ export default function Vote({ review, submit, rating }) {
                 className="mask mask-star-2 bg-orange-400"
                 value={5}
                 onChange={(e) => rating(e)}
+                checked={review.rating == 5 ? true : false}
               />
             </div>
             <label>comentary(optional)</label>

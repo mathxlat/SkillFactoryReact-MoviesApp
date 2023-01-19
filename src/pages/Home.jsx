@@ -14,7 +14,6 @@ function Home() {
     }
   };
   useEffect(()=>getFavouritesMovies(),[user])
-  console.log(movies);
   return (
     <div>
       <Main />
