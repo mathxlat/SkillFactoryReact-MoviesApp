@@ -69,34 +69,39 @@ export default function CardMovie({
   };
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex md:flex-row  flex-col items-center ">
         <img
           className="w-[15rem] h-fit"
           src={`https://image.tmdb.org/t/p/original/${
             movie && movie.poster_path
           }`}
-          alt={movie && movie.title}
+          alt={movie ? movie.title : undefined}
         />
         <div className="pl-3 text-base">
           <h1 className="text-3xl">{movie && movie.title}</h1>
           <div>
-            <span className="flex items-center">
-              {movie && movie.vote_average !== 0 && <FaStar />}
-              {movie &&
-                movie.vote_average !== 0 &&
-                movie.vote_average.toPrecision(2)}
-            </span>
+            <strong>
+              <span className="flex items-center">
+                {movie && movie.vote_average !== 0 && <FaStar />}
+                {movie &&
+                  movie.vote_average !== 0 &&
+                  movie.vote_average.toPrecision(2)}
+              </span>
+            </strong>
             <p>
-              {movie && "Released: " + movie.release_date},{" "}
+              <strong>Released:</strong>
+              {movie && movie.release_date},{" "}
               {movie && movie.runtime !== 0 && movie.runtime + "m"}
             </p>
-            <span>
-              {movie &&
-                movie.genres.map(({ name }, index) => {
-                  if (movie.genres.length - 1 !== index) return `${name}-`;
-                  else return `${name}`;
-                })}
-            </span>
+            <strong>
+              <span>
+                {movie &&
+                  movie.genres.map(({ name }, index) => {
+                    if (movie.genres.length - 1 !== index) return `${name}-`;
+                    else return `${name}`;
+                  })}
+              </span>
+            </strong>
           </div>
           <p className="w-80">{movie && movie.overview}</p>
           <WatchTrailer

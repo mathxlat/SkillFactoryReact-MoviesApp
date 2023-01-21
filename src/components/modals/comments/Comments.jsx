@@ -8,7 +8,7 @@ export default function Comments({ comments }) {
       </label>
       <input type="checkbox" id="my-modal-1" className="modal-toggle" />
       <label htmlFor="my-modal-1" className="modal cursor-pointer">
-        <label className="modal-box relative h-[40rem]" htmlFor="">
+        <label className="modal-box relative h-auto max-h-[35rem]" htmlFor="">
           {comments &&
             comments.map((data, index) => (
               <CommentSkeleton data={data} key={index} />

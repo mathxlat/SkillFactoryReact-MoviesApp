@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthProvider";
 import { useMovieContext } from "../context/Movies";
 import CardMovie from "../components/CardMovie";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function DetaillMovies() {
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const [movie, setMovie] = useState();
+  const [movie, setMovie] = useState(false);
   const [trailer, setTrailer] = useState();
   const [review, setReview] = useState({ rating: 0, comentary: "" });
   const [like, setLike] = useState(false);
@@ -47,7 +50,7 @@ export default function DetaillMovies() {
         movie.id.toString(),
         user.uid.toString()
       );
-      setReview(comentary.review);
+      typeof comentary === "object" ? setReview(comentary.review) : null;
     }
   };
 
@@ -66,10 +69,11 @@ export default function DetaillMovies() {
           src={`https://image.tmdb.org/t/p/original/${
             movie && (movie.backdrop_path || movie.poster_path)
           }`}
-          alt={movie?.title}
+          alt={movie ? movie.title : undefined}
           className="absolute w-full h-screen object-cover z-[1]"
+          onLoad={() => setLoading(false)}
         />
-        <div className="absolute flex flex-col items-center w-screen h-screen pt-64 z-[3]">
+        <div className="absolute flex flex-col items-center w-screen h-screen md:pt-64 pt-20 z-[3]">
           <CardMovie
             movie={movie}
             like={like}
@@ -81,6 +85,12 @@ export default function DetaillMovies() {
           />
         </div>
       </div>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

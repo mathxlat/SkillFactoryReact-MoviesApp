@@ -11,8 +11,6 @@ export const MoviesProvider = ({ children }) => {
   const [movies, setMovies] = useState(InitialState);
 
   const setMoviesReview = async (movieId, user, review) => {
-    //publica la review de un usuario
-    // console.log("function submit movies:", movieId.toString(), user, review);
     const movieRef = doc(db, "movies", movieId.toString());
     const data = { name: user.name, review };
     await setDoc(movieRef, { [user.id]: data }, { merge: true });
@@ -21,13 +19,13 @@ export const MoviesProvider = ({ children }) => {
   const getMoviesReview = async (movieId, user) => {
     const collectionRef = doc(db, "movies", movieId);
     let document = await getDoc(collectionRef);
-    if (document) {
-      document = document.data();
+    document = document.data();
+    if (typeof document === "object") {
       let key = Object.keys(document);
       if (key.includes(user)) {
         return document[user.toString()];
       } else false;
-    } 
+    }
   };
 
   const favouritesMovies = async (userId) => {

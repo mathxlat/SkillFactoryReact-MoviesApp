@@ -10,4 +10,6 @@ o sea se debe agregar la funcionalidad de ver perfiles o aunque sea ver la foto 
 persona que realiza los comentarios, se va a tener que subir la url de la imagen al 
 perfil
 Colocar un Loader en donde haga falta y en lo posible nublar el fondo de pantalla
+Borrar de home los botones de play y watch later, se pueden cambiar por agregar a 
+favoritos y watch Trailer
 */

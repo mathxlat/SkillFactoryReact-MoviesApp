@@ -20,7 +20,7 @@ import { doc, getDoc, arrayUnion, setDoc } from "firebase/firestore";
  * @param {*} setLike state change function
  * @param {*} movie data the movie
  * @param {*} navigate useNavigate hook function
- * 
+ *
  * This function evaluates if the user is logged in through the user variable that comes from useAuthContext. If he is logged in, it adds the movie to his favorites list, otherwise it redirects him to the login
  */
 export const favouriteMovie = async (e, db, user, setLike, movie, navigate) => {
