@@ -1,20 +1,19 @@
 // rafce
 import React, { useEffect, useState, useRef } from 'react'
-import axios from 'axios'
 import Movie from './Movie'
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
-const Row = ({ title, fetchURL }) => {
-	const [movies, setMovies] = useState([])
+const Row = ({ title, movies }) => {
+	// const [movies, setMovies] = useState([])
 
 	const slider = useRef()
 
-	useEffect(() => {
-		axios.get(fetchURL).then(response => {
-			setMovies(response.data.results)
-		})
-	}, [fetchURL])
+	// useEffect(() => {
+	// 	axios.get(fetchURL).then(response => {
+	// 		setMovies(response.data.results)
+	// 	})
+	// }, [fetchURL])
 	// fetch in dependency array: Whenever the url changes the component will fire of again.
 	//   console.log(movies);
 

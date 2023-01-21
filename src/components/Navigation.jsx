@@ -29,15 +29,15 @@ export const Navigation = () => {
 								</div>
 							</Button>
 							<Dropdown.Menu className="w-52 menu-compact">
-								<li>
+								{/* <li>
 									<Link
 										to="/profile"
 										className="justify-between"
 									>
 										Profile
 									</Link>
-								</li>
-								<Dropdown.Item>Settings</Dropdown.Item>
+								</li> */}
+								{/* <Dropdown.Item>Settings</Dropdown.Item> */}
 								<Dropdown.Item onClick={() => logOut()}>
 									Logout
 								</Dropdown.Item>

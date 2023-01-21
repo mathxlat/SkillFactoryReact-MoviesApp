@@ -1,202 +1,96 @@
-import { redirect, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { IoMdPlay } from "react-icons/io";
 import { useEffect, useState } from "react";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { firestore as db } from "../firebase/index";
-import { useAuthContext } from "./../context/AuthProvider";
-import Trailer from "../components/Trailer";
-import YouTube from "react-youtube";
+import { useAuthContext } from "../context/AuthProvider";
+import { useMovieContext } from "../context/Movies";
+import CardMovie from "../components/CardMovie";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function DetaillMovies() {
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const [movie, setMovie] = useState();
+  const [movie, setMovie] = useState(false);
   const [trailer, setTrailer] = useState();
-  const [showTrailer, setShowTrailer] = useState(false);
-  const [reviwe, setReview] = useState({ vote: 0, comentary: "" });
+  const [review, setReview] = useState({ rating: 0, comentary: "" });
+  const [like, setLike] = useState(false);
   const { user } = useAuthContext();
-
-  // 33 skill factory firebase app, comienzo de e-commerce
-  //https://youtu.be/VjJkWRgg-HA?t=5778
-  const favouriteMovie = async (e) => {
-    e.preventDefault();
-    if (user) {
-      const usersCollection = doc(db, "users", user.uid);
-      const dataUser = await getDoc(usersCollection);
-      await updateDoc(usersCollection, {
-        movieFavourites: arrayUnion(id),
-      });
-      console.log(dataUser.data());
-    } else {
-      navigate("/signup");
-    }
-  };
+  const { movies, getMoviesReview } = useMovieContext();
   const getMovie = async () => {
     try {
       let movieInfo = await axios.get(
         `https://api.themoviedb.org/3/movie/${id}?api_key=${
-          import.meta.env.VITE_KEY
+          import.meta.env.VITE_KEY_API_MOVIES
         }&append_to_response=videos`
       );
-      // https://api.themoviedb.org/3/movie/?api_key=${import.meta.env.VITE_KEY}&append_to_response=videos
       setMovie(movieInfo.data);
       const trailerid = movieInfo.data.videos.results.find(
         (video) => video.name === "Official Trailer"
       );
       setTrailer(trailerid ? trailerid : movieInfo.data.videos.results[0]);
+      vote();
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getMovie();
   }, [id]);
+  useEffect(() => {
+    vote();
+  }, [movie, user]);
+  useEffect(() => {
+    fav();
+  }, [id, movies]);
 
-  // const opts = {
-  //   playerVars: {
-  //     autoplay: 1,
-  //   },
-  // };
-  console.log(movie);
+  const vote = async () => {
+    if (movie !== undefined && movie.hasOwnProperty("id") && user) {
+      const comentary = await getMoviesReview(
+        movie.id.toString(),
+        user.uid.toString()
+      );
+      typeof comentary === "object" ? setReview(comentary.review) : null;
+    }
+  };
+
+  const fav = async () => {
+    if (movies && movies.hasOwnProperty("favouriteMovies") && id) {
+      const index = movies.favouriteMovies.findIndex((e) => e.id === id);
+      index !== -1 ? setLike(true) : setLike(false);
+    }
+  };
+
   return (
     <div>
-      {/* {showTrailer ? (
-        <Trailer videoId={trailer.key} className="absolute z-[11]" />
-      ) : null} */}
       <div className="relative h-scren z-[5]">
         <div className="absolute w-full h-screen top-0 left-0 bg-gradient-to-t from-black z-[2]"></div>
         <img
           src={`https://image.tmdb.org/t/p/original/${
             movie && (movie.backdrop_path || movie.poster_path)
           }`}
-          alt=""
+          alt={movie ? movie.title : undefined}
           className="absolute w-full h-screen object-cover z-[1]"
+          onLoad={() => setLoading(false)}
         />
-        {/* <YouTube videoId={trailer && trailer.key} /> */}
-        <div className="absolute flex justify-center w-screen h-screen pt-96 z-[3]">
-          <img
-            className="w-[15rem] h-fit"
-            src={`https://image.tmdb.org/t/p/original/${
-              movie && movie.poster_path
-            }`}
-            alt=""
+        <div className="absolute flex flex-col items-center w-screen h-screen md:pt-64 pt-20 z-[3]">
+          <CardMovie
+            movie={movie}
+            like={like}
+            setLike={setLike}
+            trailer={trailer}
+            review={review}
+            setReview={setReview}
+            id={id}
           />
-          <div className="pl-3 text-base">
-            <h1 className="text-3xl">{movie && movie.title}</h1>
-            <div>
-              <span>
-                {movie &&
-                  movie.vote_average !== 0 &&
-                  movie.vote_average.toPrecision(2)}
-              </span>
-              <p>
-                {movie && "Released: " + movie.release_date},{" "}
-                {movie && movie.runtime !== 0 && movie.runtime + "m"}
-              </p>
-              <span>
-                {movie &&
-                  movie.genres.map(({ name }, index) => {
-                    if (movie.genres.length - 1 !== index) return `${name}-`;
-                    else return `${name}`;
-                  })}
-              </span>
-            </div>
-            <p className="w-80">{movie && movie.overview}</p>
-            <label
-              htmlFor="my-modal-3"
-              className="btn"
-              onClick={() => setShowTrailer(true)}
-            >
-              <IoMdPlay />
-              Watch Trailer
-            </label>
-            {/* Put this part before </body> tag */}
-            <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-            <div className="modal">
-              <div className="modal-box relative w-auto h-auto max-w-none">
-                <label
-                  htmlFor="my-modal-3"
-                  className="btn btn-sm btn-circle absolute right-2 top-2"
-                  onClick={() => setShowTrailer(false)}
-                >
-                  ✕
-                </label>
-                {showTrailer ? (
-                  <YouTube videoId={trailer && trailer.key} />
-                ) : null}
-              </div>
-            </div>
-            <button
-              className="pl-2"
-              onClick={(e) => {
-                favouriteMovie(e);
-              }}
-            >
-              <FaHeart />
-            </button>
-            <br />
-            {/* <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-2">Vote</button> */}
-            <label htmlFor="my-modal-4" className="btn mt-2">
-              Vote
-            </label>
-            <input type="checkbox" id="my-modal-4" className="modal-toggle" />
-            <div className="modal">
-              <div className="modal-box relative w-auto h-auto max-w-none">
-                <label
-                  htmlFor="my-modal-4"
-                  className="btn btn-sm btn-circle absolute right-2 top-2"
-                >
-                  ✕
-                </label>
-                <form action="post" className="flex flex-col">
-                  <div className="rating">
-                    <input
-                      type="radio"
-                      name="rating-2"
-                      className="mask mask-star-2 bg-orange-400"
-                    />
-                    <input
-                      type="radio"
-                      name="rating-2"
-                      className="mask mask-star-2 bg-orange-400"
-                      // onSelect={}
-                    />
-                    <input
-                      type="radio"
-                      name="rating-2"
-                      className="mask mask-star-2 bg-orange-400"
-                    />
-                    <input
-                      type="radio"
-                      name="rating-2"
-                      className="mask mask-star-2 bg-orange-400"
-                    />
-                    <input
-                      type="radio"
-                      name="rating-2"
-                      className="mask mask-star-2 bg-orange-400"
-                    />
-                  </div>
-                  <label>comentary(optional)</label>
-                  <textarea
-                    className="textarea textarea-bordered"
-                    placeholder="Review..."
-                  ></textarea>
-                  <input
-                    type="submit"
-                    value="Send"
-                    className="cursor-pointer"
-                  />
-                </form>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
-//realizar pedido axios, react-youtube, boton fav y agregar al usuario que esta conectado su pelicula al array en firestore.
-//features: comentarios
